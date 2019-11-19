@@ -31,6 +31,7 @@ def preconfigure(config):
     config.SEARCH_2_STEPS_STEP2_TYPE = 'housenumber'
     config.SEARCH_2_STEPS_STEP2_THRESHOLD = 0.2
     config.SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER = 0.5
+    config.SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER = 0.7
 
 
 def multiple_search(queries, **args):
@@ -113,7 +114,7 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
 
     for result in results_full:
         # Lower the score
-        result.score *= config.SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER
+        result.score *= config.SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER
 
         ret.append(result)
 
