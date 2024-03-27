@@ -40,6 +40,7 @@ Install the python module, no explicit load is necessary.
 The default configuration is:
 ```python
 SEARCH_2_STEPS_STEP1_TYPES = ['municipality']
+SEARCH_2_STEPS_STEP1_FOUND_WITH_CONFIDENCE = 0.6
 SEARCH_2_STEPS_STEP1_THRESHOLD = 0.2
 SEARCH_2_STEPS_STEP1_LIMIT = 10
 SEARCH_2_STEPS_STEP2_LIMIT = 10

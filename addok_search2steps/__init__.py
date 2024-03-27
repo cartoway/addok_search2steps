@@ -21,6 +21,7 @@ def register_http_endpoint(api):
 
 def preconfigure(config):
     config.SEARCH_2_STEPS_STEP1_TYPES = ['municipality', 'locality']
+    config.SEARCH_2_STEPS_STEP1_FOUND_WITH_CONFIDENCE = 0.6
     config.SEARCH_2_STEPS_STEP1_THRESHOLD = 0.2
     config.SEARCH_2_STEPS_STEP1_LIMIT = 10
     config.SEARCH_2_STEPS_STEP2_LIMIT = 10
@@ -63,10 +64,13 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
     else:
         ret = []
         if results1:
+            step1_found_with_confidence = False
             params_steps_2 = []
             # Collect step 1 results
             for result in results1:
                 score_step_1 = result.score
+                if score_step_1 > config.SEARCH_2_STEPS_STEP1_FOUND_WITH_CONFIDENCE:
+                    step1_found_with_confidence = True
 
                 query_step_1 = " ".join([ str(result.__getattr__(pivot)) for pivot in config.SEARCH_2_STEPS_PIVOT_REWRITE ])
 
@@ -110,8 +114,11 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
                     if result.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
                         ret.append(result)
 
-        # Full text search to get some kind of fallback results
-        results_full = multiple_search([q + ' ' + query1 for q in queries2], limit=limit, autocomplete=autocomplete, **filters)
+        if not step1_found_with_confidence:
+            # Full text search to get some kind of fallback results
+            results_full = multiple_search([q + ' ' + query1 for q in queries2], limit=limit, autocomplete=autocomplete, **filters)
+        else:
+            results_full = []
 
     for result in results_full:
         # Lower the score
