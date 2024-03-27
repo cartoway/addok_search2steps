@@ -42,13 +42,16 @@ The default configuration is:
 SEARCH_2_STEPS_STEP1_TYPES = ['municipality']
 SEARCH_2_STEPS_STEP1_THRESHOLD = 0.2
 SEARCH_2_STEPS_STEP1_LIMIT = 10
+SEARCH_2_STEPS_STEP2_LIMIT = 10
 
 SEARCH_2_STEPS_PIVOT_FILTER = 'citycode'
-SEARCH_2_STEPS_PIVOT_REWRITE = 'name'
+SEARCH_2_STEPS_PIVOT_REWRITE = ['postcode', 'name']
 
 SEARCH_2_STEPS_STEP2_TYPE = 'housenumber'
 SEARCH_2_STEPS_STEP2_THRESHOLD = 0.2
 SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER = 0.5
+
+SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER = 0.7
 ```
 
 You can overive it in your configuration file.
@@ -79,7 +82,7 @@ SEARCH_2_STEPS_PIVOT_FILTER = 'citycode'
 ```
 q0 will be replaced by this 'normalized' value of result of step one in query of step two:
 ```python
-SEARCH_2_STEPS_PIVOT_REWRITE = 'municipality'
+SEARCH_2_STEPS_PIVOT_REWRITE = ['postcode', 'name']
 ```
 
 ### Step two
