@@ -68,8 +68,7 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
             params_steps_2 = []
             # Collect step 1 results
             for result in results1:
-                score_step_1 = result.score
-                if score_step_1 > config.SEARCH_2_STEPS_STEP1_FOUND_WITH_CONFIDENCE:
+                if result.score > config.SEARCH_2_STEPS_STEP1_FOUND_WITH_CONFIDENCE:
                     step1_found_with_confidence = True
 
                 query_step_1 = " ".join([ str(result.__getattr__(pivot)) for pivot in config.SEARCH_2_STEPS_PIVOT_REWRITE ])
@@ -82,13 +81,13 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
                     threshold = result.score
 
                 if join_value and threshold > config.SEARCH_2_STEPS_STEP1_THRESHOLD:
-                    params_steps_2.append((join_value, query_step_1, score_step_1))
+                    params_steps_2.append((join_value, query_step_1, result))
 
             # Make results uniq
             params_steps_2 = set(params_steps_2)
 
             # Run steps 2 queries
-            for join_value, query_step_1, score_step_1 in params_steps_2:
+            for join_value, query_step_1, result_step_1 in params_steps_2:
                 # Set step 2 query filter from step 1 result
                 filters_step_2 = filters.copy()
                 filters_step_2[config.SEARCH_2_STEPS_PIVOT_FILTER] = join_value
@@ -104,15 +103,15 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
                     for result_step_2 in results_step_2:
                         if result_step_2.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
                             # Lower step 2 score depending on score in step1
-                            result_step_2.score = 2 * (math.cos(math.sqrt(score_step_1) - 1) - 0.5) * result_step_2.score
+                            result_step_2.score = 2 * (math.cos(math.sqrt(result_step_1.score) - 1) - 0.5) * result_step_2.score
                             append = True
                             ret.append(result_step_2)
                 if not append:
                     # No usable result from steps 2, use steps 1 result
                     # Lower the score
-                    result.score *= config.SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER
-                    if result.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
-                        ret.append(result)
+                    result_step_1.score *= config.SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER
+                    if result_step_1.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
+                        ret.append(result_step_1)
 
         if not step1_found_with_confidence:
             # Full text search to get some kind of fallback results
