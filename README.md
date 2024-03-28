@@ -72,7 +72,7 @@ SEARCH_2_STEPS_STEP1_TYPES = ['municipality', 'locality']
 Only result with score above the threshold and under this limit will remain available for next step:
 ```python
 SEARCH_2_STEPS_STEP1_THRESHOLD = 0.5
-SEARCH_2_STEPS_STEP2_TYPE = 'housenumber'
+SEARCH_2_STEPS_STEP2_TYPES = ['street', 'housenumber', 'locality']
 SEARCH_2_STEPS_STEP1_LIMIT = 10
 ```
 

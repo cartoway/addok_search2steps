@@ -29,7 +29,7 @@ def preconfigure(config):
     config.SEARCH_2_STEPS_PIVOT_FILTER = 'citycode'
     config.SEARCH_2_STEPS_PIVOT_REWRITE = ['postcode', 'name']
 
-    config.SEARCH_2_STEPS_STEP2_TYPE = 'housenumber'
+    config.SEARCH_2_STEPS_STEP2_TYPES = ['street', 'housenumber', 'locality']
     config.SEARCH_2_STEPS_STEP2_THRESHOLD = 0.2
     config.SEARCH_2_STEPS_STEP2_PENALITY_MULTIPLIER = 0.5
     config.SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER = 0.5
@@ -91,21 +91,23 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
                 # Set step 2 query filter from step 1 result
                 filters_step_2 = filters.copy()
                 filters_step_2[config.SEARCH_2_STEPS_PIVOT_FILTER] = join_value
-                filters_step_2['type'] = config.SEARCH_2_STEPS_STEP2_TYPE
 
-                # Mixup queries2 with results of step 1
-                # Queries2 = "37 Rue des Lilas"
-                # query_step_1 = "33400 Cannejan"
-                # "street result_postalcode_step1 result_city_step_1" => "37 Rue des Lilas 33400 Cannejan"
-                results_step_2 = multiple_search([q + ' ' + query_step_1 for q in queries2], limit=config.SEARCH_2_STEPS_STEP2_LIMIT, autocomplete=autocomplete, **filters_step_2)
                 append = False
-                if results_step_2:
-                    for result_step_2 in results_step_2:
-                        if result_step_2.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
-                            # Lower step 2 score depending on score in step1
-                            result_step_2.score = 2 * (math.cos(math.sqrt(result_step_1.score) - 1) - 0.5) * result_step_2.score
-                            append = True
-                            ret.append(result_step_2)
+                for type in config.SEARCH_2_STEPS_STEP2_TYPES:
+                    filters_step_2['type'] = type
+                    # Mixup queries2 with results of step 1
+                    # Queries2 = "37 Rue des Lilas"
+                    # query_step_1 = "33400 Cannejan"
+                    # "street result_postalcode_step1 result_city_step_1" => "37 Rue des Lilas 33400 Cannejan"
+                    results_step_2 = multiple_search([q + ' ' + query_step_1 for q in queries2], limit=config.SEARCH_2_STEPS_STEP2_LIMIT, autocomplete=autocomplete, **filters_step_2)
+                    if results_step_2:
+                        for result_step_2 in results_step_2:
+                            if result_step_2.score > config.SEARCH_2_STEPS_STEP2_THRESHOLD:
+                                # Lower step 2 score depending on score in step1
+                                result_step_2.score = 2 * (math.cos(math.sqrt(result_step_1.score) - 1) - 0.5) * result_step_2.score
+                                append = True
+                                ret.append(result_step_2)
+
                 if not append:
                     # No usable result from steps 2, use steps 1 result
                     # Lower the score
