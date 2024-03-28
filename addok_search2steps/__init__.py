@@ -117,13 +117,13 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
         if not step1_found_with_confidence:
             # Full text search to get some kind of fallback results
             results_full = multiple_search([q + ' ' + query1 for q in queries2], limit=limit, autocomplete=autocomplete, **filters)
+            for result in results_full:
+                # Lower the score
+                result.score *= config.SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER
         else:
             results_full = []
 
     for result in results_full:
-        # Lower the score
-        result.score *= config.SEARCH_2_STEPS_FULL_TEXT_PENALITY_MULTIPLIER
-
         ret.append(result)
 
     if ret:
