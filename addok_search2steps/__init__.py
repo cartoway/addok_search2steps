@@ -63,8 +63,8 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
 
     else:
         ret = []
+        step1_found_with_confidence = False
         if results1:
-            step1_found_with_confidence = False
             params_steps_2 = []
             # Collect step 1 results
             for result in results1:
