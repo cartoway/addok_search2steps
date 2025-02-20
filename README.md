@@ -35,6 +35,8 @@ http://localhost:7878/search2steps?q0=Brest&q=Rue+du+Restic&limit=5
 
 ## Configuration
 
+**This plugin require an Addok with support of multi values filter.** For Addok witout multi values filter use search2steps v1.
+
 Install the python module, no explicit load is necessary.
 
 The default configuration is:
