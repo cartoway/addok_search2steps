@@ -91,7 +91,7 @@ def search2steps(config, query1, queries2, autocomplete, limit, **filters):
                 # Set step 2 query filter from step 1 result
                 filters_step_2 = filters.copy()
                 filters_step_2[config.SEARCH_2_STEPS_PIVOT_FILTER] = join_value
-                filters_step_2['type'] = '+'.join(SEARCH_2_STEPS_STEP2_TYPES)
+                filters_step_2['type'] = '+'.join(config.SEARCH_2_STEPS_STEP2_TYPES)
 
                 append = False
                 # Mixup queries2 with results of step 1
